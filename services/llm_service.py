@@ -8,15 +8,7 @@ from langchain.schema import ChatMessage as LangchainChatMessage
 from langchain.callbacks.base import BaseCallbackHandler
 import streamlit as st
 from utils.config import settings
-
-class StreamHandler(BaseCallbackHandler):
-    def __init__(self, container, initial_text=""):
-        self.container = container
-        self.text = initial_text
-
-    def on_llm_new_token(self, token: str, **kwargs) -> None:
-        self.text += token
-        self.container.markdown(self.text)
+from utils.callbacks import StreamHandler
 
 class LLMService:
     """呼叫 LLM 並串流回應"""
@@ -31,7 +23,16 @@ class LLMService:
         )
 
     def chat(self, messages: list[LangchainChatMessage]) -> str:
-        """傳送聊天訊息給 LLM 並回傳回應文字"""
+        """
+        傳送聊天訊息給 LLM 並回傳回應文字（支援 streaming）。
+        """
         stream_handler = StreamHandler(st.empty())
-        response = self.llm.invoke(messages, callbacks=[stream_handler])
-        return response.content
+        response = ""
+
+        # stream() 不支援 callbacks，只能手動串流處理
+        for chunk in self.llm.stream(messages):
+            token = chunk.content or ""
+            response += token
+            stream_handler.on_llm_new_token(token)
+
+        return response
