@@ -12,10 +12,10 @@ from langchain.memory import ConversationBufferMemory
 from langchain_community.chat_message_histories import StreamlitChatMessageHistory
 
 class SummarizeController:
-    def __init__(self):
+    def __init__(self, provider: str = "local"):
+        self.llm = LLMService(provider=provider).llm
         self.view = SummarizeView()
         self.retriever_service = RetrieverService()
-        self.llm = LLMService().llm
         self.memory = ConversationBufferMemory(
             memory_key="chat_history",
             chat_memory=StreamlitChatMessageHistory(),

@@ -15,6 +15,9 @@ class Settings:
     LLM_API_KEY: str = os.getenv("LLM_API_KEY", "")
     LLM_API_BASE: str = os.getenv("LLM_API_BASE", "")
 
+    GOOGLE_API_KEY: str = os.getenv("GOOGLE_API_KEY")
+    GEMINI_MODEL: str = os.getenv("GEMINI_MODEL", "gemini-1.5-flash")
+
     EMBEDDING_MODEL: str = os.getenv("EMBEDDING_MODEL", "")
     EMBEDDING_API_KEY: str = os.getenv("EMBEDDING_API_KEY", "")
     EMBEDDING_API_BASE: str = os.getenv("EMBEDDING_API_BASE", "")

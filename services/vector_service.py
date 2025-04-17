@@ -7,7 +7,7 @@ import os
 import tempfile
 from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.vectorstores import DocArrayInMemorySearch
+from langchain_community.vectorstores import FAISS
 from langchain_openai import OpenAIEmbeddings
 from utils.config import settings
 
@@ -33,7 +33,7 @@ class RetrieverService:
             check_embedding_ctx_length=False
         )
 
-        vectordb = DocArrayInMemorySearch.from_documents(splits, embeddings)
+        vectordb = FAISS.from_documents(splits, embeddings)
         retriever = vectordb.as_retriever(
             search_type="similarity",
             search_kwargs={"k": 8, "fetch_k": 16, "score_threshold": 0.85}

@@ -12,8 +12,8 @@ from utils.logger import logger
 class ChatController:
     """控制聊天訊息輸入、記憶、回覆流程"""
 
-    def __init__(self):
-        self.llm = LLMService()
+    def __init__(self, provider: str = "local"):
+        self.llm = LLMService(provider=provider)
         self.view = ChatView()
 
         if "messages" not in st.session_state:
