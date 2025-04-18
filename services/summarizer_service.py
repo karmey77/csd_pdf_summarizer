@@ -7,13 +7,21 @@ from langchain.prompts import PromptTemplate
 from langchain.chains.summarize import load_summarize_chain
 from langchain.chains import LLMChain, MapReduceDocumentsChain, ReduceDocumentsChain, RefineDocumentsChain
 from langchain.chains.combine_documents.stuff import StuffDocumentsChain
+from langchain_community.document_loaders import PyPDFLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+import os
+import tempfile
 
 class SummarizerService:
-    def __init__(self, llm, splits):
+    def __init__(self):
+        pass
+
+    def summarize(self, uploaded_files, mode: str, llm) -> str:
+        docs = self.extract_docs(uploaded_files)
+        splits = self.split_docs(docs)
         self.llm = llm
         self.splits = splits
 
-    def summarize(self, mode: str) -> str:
         if mode == "stuff_chain":
             return self._stuff_chain()
         elif mode == "map_reduce":
@@ -22,6 +30,24 @@ class SummarizerService:
             return self._refine()
         else:
             return "請選擇有效的摘要模式"
+
+    def extract_docs(self, uploaded_files):
+        docs = []
+        temp_dir = tempfile.TemporaryDirectory()
+        for file in uploaded_files:
+            temp_path = os.path.join(temp_dir.name, file.name)
+            with open(temp_path, "wb") as f:
+                f.write(file.getvalue())
+            docs.extend(PyPDFLoader(temp_path).load())
+        return docs
+
+    def extract_text(self, uploaded_files):
+        docs = self.extract_docs(uploaded_files)
+        return "\n\n".join([doc.page_content for doc in docs])
+
+    def split_docs(self, docs):
+        text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=100)
+        return text_splitter.split_documents(docs)
 
     def _stuff_chain(self):
         prompt = PromptTemplate(template="""寫出以下文字內容的詳細摘要，用繁體中文回答，若有簡體字請轉換成繁體字。
