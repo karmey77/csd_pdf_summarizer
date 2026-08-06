@@ -1,82 +1,117 @@
-# PDF 智能摘要與對話系統
+# PDF Summarization and Retrieval Chat
 
-這是一個基於 Streamlit 的 PDF 文件處理系統，提供以下功能：
-- 📄 PDF 文件上傳與處理
-- 🧠 智能摘要生成（支援 Stuff/MapReduce/Refine 三種模式）
-- 💬 文件內容對話（基於向量檢索）
-- 🤖 支援 OpenAI 和 Google Gemini 模型
+A modular Streamlit application for working with PDF documents through multi-strategy summarization and retrieval-augmented conversation.
 
-## 功能特點
+The project demonstrates an end-to-end applied-AI workflow: accept uploaded documents, extract and split their contents, create vector embeddings, retrieve relevant context, maintain conversation history, and stream model responses through a user-facing interface.
 
-- 多種摘要模式：
-  - Stuff：直接處理全文
-  - MapReduce：分塊處理後合併
-  - Refine：迭代式精煉摘要
-- 文件對話：
-  - 基於向量檢索的語意搜尋
-  - 上下文記憶對話
-- 模型支援：
-  - OpenAI API
-  - Google Gemini API
-  - 本地模型（需自行設定）
+## What it does
 
-## 安裝與設定
+- Upload and process one or more PDF documents.
+- Generate Traditional Chinese summaries with three strategies:
+  - **Stuff** for shorter documents that fit into a single prompt.
+  - **MapReduce** for chunk-level summaries followed by aggregation.
+  - **Refine** for iterative summary improvement across chunks.
+- Ask questions about uploaded documents through FAISS-based semantic retrieval.
+- Maintain multi-turn document-chat history in Streamlit sessions.
+- Use Google Gemini or an OpenAI-compatible endpoint, including a separately configured local endpoint.
+- Stream generated responses in the interface.
 
-1. 克隆專案：
-```bash
-git clone [repository-url]
-cd csd_pdf_summarizer
+## Architecture
+
+```text
+Streamlit UI
+  ├─ controllers/   coordinates chat, document Q&A, and summarization flows
+  ├─ services/      model access, PDF processing, vector retrieval, and summarization
+  ├─ views/         Streamlit input and output components
+  ├─ models/        application message model
+  └─ utils/         settings, logging, and streaming callbacks
+
+PDF upload
+  → PyPDFLoader
+  → RecursiveCharacterTextSplitter
+  → OpenAI-compatible embeddings
+  → FAISS retriever
+  → conversational retrieval or Gemini context prompt
+  → streamed response
 ```
 
-2. 建立虛擬環境：
-```bash
-python -m venv venv
-source venv/bin/activate  # Linux/Mac
-# 或
-.\venv\Scripts\activate  # Windows
-```
+## Technology
 
-3. 安裝依賴：
-```bash
-pip install -r requirements.txt
-```
+- Python and Streamlit
+- LangChain
+- FAISS vector search
+- OpenAI-compatible chat and embedding endpoints
+- Google Gemini
+- PyPDF
+- Pydantic settings and `.env` configuration
 
-4. 設定環境變數：
-```bash
-cp .env.example .env
-```
-編輯 `.env` 文件，填入必要的 API 金鑰和設定。
+## Run locally
 
-## 使用方式
+1. Clone the repository.
 
-1. 啟動應用：
-```bash
-streamlit run main.py
-```
+   ```bash
+   git clone https://github.com/karmey77/csd_pdf_summarizer.git
+   cd csd_pdf_summarizer
+   ```
 
-2. 在瀏覽器中開啟 `http://localhost:8501`
+2. Create and activate a virtual environment.
 
-3. 選擇功能：
-   - 一般聊天：直接與 AI 對話
-   - 文件對話：上傳 PDF 後進行問答
-   - 摘要分析：上傳 PDF 後生成摘要
+   ```bash
+   python -m venv .venv
+   source .venv/bin/activate
+   ```
 
-## 環境變數說明
+   On Windows, activate it with `.venv\\Scripts\\activate`.
 
-- `LLM_MODEL`：OpenAI 模型名稱
-- `LLM_API_KEY`：OpenAI API 金鑰
-- `LLM_API_BASE`：OpenAI API 基礎 URL（可選）
-- `GOOGLE_API_KEY`：Google API 金鑰
-- `GEMINI_MODEL`：Gemini 模型名稱
-- `EMBEDDING_MODEL`：嵌入模型名稱
-- `EMBEDDING_API_KEY`：嵌入模型 API 金鑰
-- `EMBEDDING_API_BASE`：嵌入模型 API 基礎 URL（可選）
+3. Install dependencies.
 
-## 開發團隊
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-- 開發：李易修 副研究員
-- 指導：葉神丑 研發長
+4. Copy the environment template and configure the model and embedding endpoints you intend to use.
 
-## 授權
+   ```bash
+   cp .env.example .env
+   ```
 
-[授權資訊] 
+5. Start the application.
+
+   ```bash
+   streamlit run main.py
+   ```
+
+## Configuration
+
+| Variable | Purpose |
+| --- | --- |
+| `LLM_MODEL` | Model name for the OpenAI-compatible chat endpoint. |
+| `LLM_API_KEY` | API key for that endpoint. |
+| `LLM_API_BASE` | Base URL for the endpoint. |
+| `GOOGLE_API_KEY` | Google Gemini API key. |
+| `GEMINI_MODEL` | Gemini model name. |
+| `EMBEDDING_MODEL` | Embedding model name. |
+| `EMBEDDING_API_KEY` | Embedding endpoint API key. |
+| `EMBEDDING_API_BASE` | Embedding endpoint base URL. |
+
+Never commit a populated `.env` file or real API credentials.
+
+## Project status and limitations
+
+This repository is an applied-AI prototype, not a production service. It does not publish comparative model-quality, latency, cost, or scale claims.
+
+Current engineering follow-ups include:
+
+- add meaningful unit and integration tests; the current test placeholder is empty;
+- validate the complete dependency set in a clean environment;
+- add document-size limits, upload validation, and more granular error handling;
+- add retrieval and summarization evaluation cases;
+- document a production deployment and observability path.
+
+## Attribution
+
+Developed by Yi-Hsiu Lee during his work at the Corporate Synergy Development Center (CSDC／財團法人中衛發展中心).
+
+## License
+
+No open-source license is currently granted. The source is public for inspection and portfolio reference; reuse requires permission from the repository owner and any applicable rights holder.
