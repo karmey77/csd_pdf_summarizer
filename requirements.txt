@@ -96,7 +96,7 @@ opentelemetry-proto==1.32.1
 opentelemetry-sdk==1.32.1
 opentelemetry-semantic-conventions==0.53b1
 opentelemetry-util-http==0.53b1
-opt_einsum==0.5.1
+opt_einsum==3.4.0
 orjson==3.10.16
 overrides==7.7.0
 packaging==24.2
