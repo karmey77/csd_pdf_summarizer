@@ -34,7 +34,7 @@ flatbuffers==25.2.10
 frozenlist==1.5.0
 fsspec==2025.3.2
 gitdb==4.0.12
-GitPython==3.1.44
+GitPython==3.1.62
 google-auth==2.39.0
 googleapis-common-protos==1.70.0
 greenlet==3.2.0
@@ -96,7 +96,7 @@ opentelemetry-proto==1.32.1
 opentelemetry-sdk==1.32.1
 opentelemetry-semantic-conventions==0.53b1
 opentelemetry-util-http==0.53b1
-opt_einsum==3.4.0
+opt_einsum==0.5.1
 orjson==3.10.16
 overrides==7.7.0
 packaging==24.2
